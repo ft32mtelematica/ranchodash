@@ -1,24 +1,31 @@
+# Dentro do seu arquivo .py (ex: por_pessoa2.py)
+
 import streamlit as st
 import pandas as pd
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
-# ... (outras importações)
-
 @st.cache_data(ttl=600)
 def load_google_sheet_data():
-    """Conecta na Planilha Google ao Streamlit no formato TOML."""
+    """Conecta na Planilha Google no Streamlit no formato TOML."""
     try:
         # Pede ao Streamlit pela seção [gcp_service_account] dos segredos
         creds_dict = st.secrets["gcp_service_account"]
         
-        # Usa o dicionário para autenticar
-        creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict)
+        # Define os escopos (permissões)
+        scope = [
+            'https://spreadsheets.google.com/feeds',
+            'https://www.googleapis.com/auth/drive'
+        ]
         
-        scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-        client = gspread.authorize(creds.with_scopes(scope))
+        # --- CORREÇÃO AQUI ---
+        # Passe o dicionário E os escopos na mesma chamada
+        creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+        
+        # Agora, autorize diretamente com o objeto 'creds' já configurado
+        client = gspread.authorize(creds)
 
-        # O resto da função continua igual
+        
         spreadsheet = client.open("Previsao_de_Rancho") 
         worksheet = spreadsheet.sheet1 
         data = worksheet.get_all_records()

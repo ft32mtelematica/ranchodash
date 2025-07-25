@@ -3,26 +3,30 @@ import pandas as pd
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
-# --- Função para carregar dados da Planilha Google com cache ---
-@st.cache_data(ttl=600) # Cache de 10 minutos
-def load_google_sheet_data():
-    """Conecta na Planilha Google e carrega os dados da primeira aba."""
-    try:
-        scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-        creds = ServiceAccountCredentials.from_json_keyfile_name('credentials.json', scope)
-        client = gspread.authorize(creds)
+# ... (outras importações)
 
-        # Nome da planilha
+@st.cache_data(ttl=600)
+def load_google_sheet_data():
+    """Conecta na Planilha Google usando os segredos do Streamlit no formato TOML."""
+    try:
+        # Pede ao Streamlit pela seção [gcp_service_account] dos segredos
+        creds_dict = st.secrets["gcp_service_account"]
+        
+        # Usa o dicionário para autenticar
+        creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict)
+        
+        scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
+        client = gspread.authorize(creds.with_scopes(scope))
+
+        # O resto da função continua igual
         spreadsheet = client.open("Previsao_de_Rancho") 
-        
-        # Pega a primeira aba por padrão. Se for outra, use spreadsheet.worksheet("Nome da Aba")
         worksheet = spreadsheet.sheet1 
-        
         data = worksheet.get_all_records()
         df = pd.DataFrame(data)
         return df
-    except gspread.exceptions.SpreadsheetNotFound:
-        st.error("Planilha não encontrada. Verifique o nome e se ela foi compartilhada com o e-mail de serviço.")
+        
+    except KeyError:
+        st.error("Segredo '[gcp_service_account]' não encontrado. Verifique a configuração no Streamlit Cloud.")
         return pd.DataFrame()
     except Exception as e:
         st.error(f"Erro ao conectar com a Planilha Google: {e}")

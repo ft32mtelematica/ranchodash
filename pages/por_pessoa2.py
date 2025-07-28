@@ -146,3 +146,8 @@ if not df.empty:
                     st.error(f"Erro ao tentar quitar o valor: {e}")
 else:
     st.warning("Não foi possível carregar os dados da Planilha Google. Verifique as configurações de conexão.")
+
+# Expansor para ver todos os dados da planilha
+if not df.empty:
+    with st.expander("Ver todos os dados da planilha"):
+        st.dataframe(df)

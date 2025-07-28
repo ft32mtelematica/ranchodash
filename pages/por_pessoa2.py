@@ -9,7 +9,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 def load_google_sheet_data():
     """Conecta na Planilha Google no Streamlit no formato TOML."""
     try:
-        # Pede ao Streamlit pela seção [gcp_service_account] dos segredos
+        # Pede ao Streamlit pela seção [gcp_service_account] 
         creds_dict = st.secrets["gcp_service_account"]
         
         # Define os escopos (permissões)
@@ -17,8 +17,7 @@ def load_google_sheet_data():
             'https://spreadsheets.google.com/feeds',
             'https://www.googleapis.com/auth/drive'
         ]
-        
-        # --- CORREÇÃO AQUI ---
+               
         # Passe o dicionário E os escopos na mesma chamada
         creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
         

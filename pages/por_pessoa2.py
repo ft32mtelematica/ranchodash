@@ -120,7 +120,7 @@ if not df.empty:
         
         soma_total = resultado_salvo["TOTAL"].sum()
         
-        col1, col2 = st.columns([1, 4])
+        col1, col2 = st.columns([2, 4])
         col1.metric(label="TOTAL A PAGAR", value=f"R$ {soma_total:.2f}")
         
         if soma_total > 0:

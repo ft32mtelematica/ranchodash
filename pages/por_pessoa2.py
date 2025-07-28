@@ -71,6 +71,10 @@ if not df.empty:
                         st.write("Resultado da busca:")
                         # Exibe as colunas desejadas do resultado
                         st.dataframe(resultado[["Graduação:", "Nome de Guerra:", "TOTAL"]])
+                        #
+                        soma_total = resultado["TOTAL"].sum()
+                        #
+                        st.metric(label="TOTAL", value=f"{soma_total:.2f}")
                 else:
                     st.error(f"Coluna '{coluna_re}' não encontrada no DataFrame.")
             

@@ -3,7 +3,6 @@
 # ==============================================================================
 import streamlit as st                                  # Usado para caching (@st.cache_resource) e para acessar os 'secrets' em produção.
 import gspread                                          # Biblioteca para interagir com a API do Google Sheets.
-from oauth2client.service_account import ServiceAccountCredentials # Classe para autenticação via conta de serviço.
 import os                                               # Usado para manipular caminhos de arquivos do sistema operacional.
 
 # ==============================================================================
@@ -19,9 +18,6 @@ def get_gspread_client():
     - Localmente, usa o arquivo credentials.json (se existir).
     - Em produção (Streamlit Cloud), usa st.secrets.
     """
-    # Define o escopo de permissões. 'feeds' para ler/escrever em planilhas e 'drive' para gerenciar arquivos.
-    scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-    
     # Constrói um caminho absoluto para o arquivo de credenciais.
     # Isso é uma prática robusta que garante que o arquivo `credentials.json` seja
     # encontrado, não importa de qual subpasta o script esteja sendo executado.
@@ -36,27 +32,24 @@ def get_gspread_client():
 
         # 1. Prioriza o arquivo local para desenvolvimento.
         if os.path.exists(creds_path):
-            creds = ServiceAccountCredentials.from_json_keyfile_name(creds_path, scope)
+            client = gspread.service_account(filename=creds_path)
             # st.info("Conectado via credentials.json (Local).") # Descomente para depuração.
         
         # 2. Se não houver arquivo local, tenta usar os 'secrets' do Streamlit (para produção).
         #    Quando o app é hospedado no Streamlit Community Cloud, as credenciais são
         #    armazenadas de forma segura em `st.secrets`.
         elif hasattr(st, 'secrets') and "gcp_service_account" in st.secrets:
-            creds_dict = st.secrets["gcp_service_account"]
-            creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+            client = gspread.service_account_from_dict(st.secrets["gcp_service_account"])
             # st.info("Conectado via Streamlit Secrets (Produção).") # Descomente para depuração.
         
         # 3. Se nenhum método de credencial funcionar, exibe uma mensagem de erro clara.
         else:
             st.error("Nenhuma credencial encontrada. Adicione 'credentials.json' para desenvolvimento local ou configure os 'secrets' do Streamlit para produção.")
             return None # Retorna None para indicar falha na conexão.
-            
-        # Autoriza a conexão com as credenciais obtidas.
-        client = gspread.authorize(creds)
+
         return client # Retorna o objeto cliente, pronto para ser usado.
 
     # Captura qualquer exceção que possa ocorrer durante o processo de autenticação.
-    except Exception as e:
+    except ImportError as e:
         st.error(f"Erro ao autenticar com o Google Sheets: {e}")
         return None # Retorna None em caso de erro.

@@ -11,7 +11,7 @@ from utils.styling import apply_global_styles
 apply_global_styles()
 
 # Define o título principal que aparecerá no topo da aplicação.
-st.logo("/home/ramos/DESENVOLVIMENTO/previsao_de_rancho_V5/images/Brasao32BPMM.png", size="large")
+st.logo("images/Brasao32BPMM.png", size="large")
 st.title("Previsão de Rancho")
 
 # Utiliza a nova função `st.navigation` do Streamlit para criar um menu de navegação
@@ -27,8 +27,9 @@ pg = st.navigation([
     st.Page("pages/retiradas.py", title="Retiradas", icon="💸"),
 ])
 
-caminho_logo = "/home/ramos/DESENVOLVIMENTO/previsao_de_rancho_V5/images/Brasao32BPMM.png"
+caminho_logo = "images/Brasao32BPMM.png"
 st.sidebar.image(caminho_logo, width=200) # Aumente ou diminua este valor
 
 # Executa a navegação, fazendo com que o menu e as páginas funcionem.
 pg.run()
+

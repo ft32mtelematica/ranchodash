@@ -9,8 +9,9 @@ from utils.g_sheets_connector import get_gspread_client # Importa nossa função
 # ==============================================================================
 # 2. INTERFACE DO USUÁRIO
 # ==============================================================================
+
 # Define o título e uma breve descrição para a página.
-st.title("Lançamento de Retiradas")
+st.subheader("Lançamento de Retiradas")
 st.write("Aqui você pode registrar as saídas do caixa do Rancho.")
 
 # ==============================================================================
@@ -30,7 +31,7 @@ with st.form(key="RETIRADAS_form", clear_on_submit=True):
     
     # Botão de submissão do formulário.
     submit_button = st.form_submit_button(label="Enviar Registro")
-
+    
 # ==============================================================================
 # 4. LÓGICA DE SUBMISSÃO DO FORMULÁRIO
 # ==============================================================================
@@ -76,10 +77,10 @@ if submit_button:
                 
                 # Fornece feedback de sucesso ao usuário.
                 st.success("Registro enviado com sucesso para a planilha!")
-                #st.balloons() # Balões podem ser excessivos para uma simples retirada.
+                #st.balloons() # Balões 
 
             # Tratamento de erros específicos e genéricos.
             except gspread.exceptions.SpreadsheetNotFound:
                 st.error("Erro: A planilha 'Previsao_de_Rancho' não foi encontrada. Verifique o nome e as permissões da sua conta de serviço.")
-            except Exception as e:
+            except ImportError as e:
                 st.error(f"Ocorreu um erro ao tentar enviar os dados: {e}")

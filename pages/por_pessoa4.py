@@ -6,6 +6,7 @@
 import streamlit as st                                  # Biblioteca principal para criar a interface web do aplicativo.
 import pandas as pd                                     # Biblioteca para manipulação e análise de dados, usada aqui como um DataFrame.
 import gspread                                          # Biblioteca para interagir com a API do Google Sheets.
+from utils.styling import apply_global_styles           # Importa nossa função de estilo.
 from utils.g_sheets_connector import get_gspread_client # Importa a função de conexão centralizada que criamos.
 
 # --- Funções de Conexão e Carregamento de Dados  ---
@@ -22,6 +23,25 @@ def load_data(_client):
         worksheet_form = spreadsheet.worksheet("Respostas_ao_formulario_1")
         data_form = worksheet_form.get_all_records()
         df_form = pd.DataFrame(data_form) # Converte os dados recebidos em um DataFrame do Pandas.
+
+        # --- Limpeza e Conversão de Tipos ---
+        # Esta é a correção principal. Garantimos que as colunas tenham tipos
+        # consistentes para evitar os erros de serialização do Arrow.
+
+        # Colunas que devem ser tratadas como texto (string).
+        # Adicionado "IDENTIFICAÇÃO" como medida de segurança caso a coluna exista com esse nome.
+        colunas_texto = ["RE (Sem dígito):", "Graduação:", "Nome de Guerra:", "Quitado", "IDENTIFICAÇÃO"]
+        for col in colunas_texto:
+            if col in df_form.columns:
+                # .astype(str) converte todos os valores da coluna para texto.
+                df_form[col] = df_form[col].astype(str)
+
+        # Para colunas que deveriam ser numéricas, como 'TOTAL'.
+        if "TOTAL" in df_form.columns:
+            # pd.to_numeric com errors='coerce' transforma qualquer valor não-numérico em NaN (vazio).
+            # .fillna(0) então substitui esses vazios por 0. É a forma mais segura de limpar colunas numéricas.
+            df_form["TOTAL"] = pd.to_numeric(df_form["TOTAL"], errors='coerce').fillna(0)
+
         return df_form # Retorna o DataFrame para ser usado no aplicativo.
     except gspread.exceptions.WorksheetNotFound:
         st.error("Erro: A aba 'Respostas_ao_formulario_1' não foi encontrada. Verifique o nome.")
@@ -35,8 +55,11 @@ def load_data(_client):
 # ==============================================================================
 # 3. INÍCIO DA INTERFACE DO APLICATIVO
 # ==============================================================================
+# Aplica os estilos globais definidos no arquivo .streamlit/style.css
+apply_global_styles()
+
 # Define o título da página.
-st.title("Consulta e Quitação de Valores por Pessoa")
+st.subheader("Consulta e Quitação de Valores por Pessoa")
 
 # ==============================================================================
 # 4. INICIALIZAÇÃO DO ESTADO DA SESSÃO (SESSION STATE)

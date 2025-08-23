@@ -1,0 +1,30 @@
+/* Arquivo: .streamlit/style.css */
+
+/* Estilo para st.title (que gera uma tag <h1>) */
+.stApp h1 {
+    /*text-align: center;*/
+    color: #FFD700; /* Dourado */
+    font-size: 36px;
+    font-family: "Arial Black", Gadget, sans-serif;
+    padding-top: 0px; /* Remove espaçamento interno superior */
+    margin-top: 0px; /* Reduz a distância do topo */
+}
+
+/* Estilo para st.subheader (que gera uma tag <h3>) */
+.stApp h3 {
+    color: #E0E0E0; /* Cinza-claro */
+    font-size: 24px;
+    margin-top: 0px; /* Remove margem superior */
+    padding-top: 0px; /* Remove espaçamento interno superior */
+    font-family: "Verdana", Geneva, sans-serif;
+}
+
+/* Ajusta o espaçamento do bloco de contêiner principal */
+.block-container {
+    padding-top: 0 !important;
+    margin-top: 40px !important;
+}
+
+
+
+

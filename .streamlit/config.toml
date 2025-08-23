@@ -1,9 +1,13 @@
-[client]
-toolbarMode = "minimal"
+# Arquivo: .streamlit/config.toml
+
 [theme]
 primaryColor="#000000ff"
 backgroundColor="#444444"
 secondaryBackgroundColor="#aa2828"
 textColor="#ffffffff"
 font="sans serif"
+
+borderColor="#aa2828"
+showWidgetBorder=true
+
 

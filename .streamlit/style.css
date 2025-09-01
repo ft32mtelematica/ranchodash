@@ -1,5 +1,6 @@
 /* Arquivo: .streamlit/style.css */
 
+
 /* Estilo para st.title (que gera uma tag <h1>) */
 .stApp h1 {
     /*text-align: center;*/
@@ -22,9 +23,6 @@
 /* Ajusta o espaçamento do bloco de contêiner principal */
 .block-container {
     padding-top: 0 !important;
-    margin-top: 40px !important;
+    margin-top: 40px !important;    
 }
-
-
-
 

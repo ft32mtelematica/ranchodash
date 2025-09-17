@@ -4,11 +4,15 @@
 import streamlit as st                                  # Biblioteca principal para criar a interface web.
 import gspread                                          # Biblioteca para interagir com a API do Google Sheets.
 from datetime import datetime                           # Módulo para obter a data e hora atuais.
+from utils.styling import apply_global_styles           # Importa nossa função de estilo.
 from utils.g_sheets_connector import get_gspread_client # Importa nossa função de conexão centralizada.
 
 # ==============================================================================
 # 2. INTERFACE DO USUÁRIO
 # ==============================================================================
+
+# Aplica os estilos globais definidos no arquivo .streamlit/style.css
+apply_global_styles()
 
 # Define o título e uma breve descrição para a página.
 st.subheader("Lançamento de Retiradas")
@@ -20,17 +24,20 @@ st.write("Aqui você pode registrar as saídas do caixa do Rancho.")
 # `st.form` é usado para agrupar vários campos de entrada. Os dados só são enviados
 # quando o botão de submissão dentro do formulário é clicado.
 # `clear_on_submit=True` limpa os campos do formulário após o envio bem-sucedido.
-with st.form(key="RETIRADAS_form", clear_on_submit=True):
-    # Campos de entrada de texto e número para o usuário preencher.
-    motivo = st.text_input("Motivo*", help="Ex: Compra de material de limpeza, Venda de bebidas")
-    local = st.text_input("Local", help="Ex: Supermercado X, Cantina")
-    produto = st.text_input("Produto/Descrição*", help="Ex: Água sanitária, Detergente, Refrigerante")
-    
-    # Campo de valor. Note que pedimos um valor positivo para facilitar a digitação do usuário.
-    valor_input = st.number_input("Valor (R$)*", min_value=0.0, format="%.2f", help="Use somente valores positivos, ele será convertido automaticamente para negativo.")
-    
-    # Botão de submissão do formulário.
-    submit_button = st.form_submit_button(label="Enviar Registro")
+col1, col2, col3 = st.columns(3)
+with col1:
+
+    with st.form(key="RETIRADAS_form", clear_on_submit=True):
+        # Campos de entrada de texto e número para o usuário preencher.
+        motivo = st.text_input("Motivo*", help="Ex: Compra de material de limpeza, Venda de bebidas")
+        local = st.text_input("Local", help="Ex: Supermercado X, Cantina")
+        produto = st.text_input("Produto/Descrição*", help="Ex: Água sanitária, Detergente, Refrigerante")
+        
+        # Campo de valor. Note que pedimos um valor positivo para facilitar a digitação do usuário.
+        valor_input = st.number_input("Valor (R$)*", min_value=0.0, format="%.2f", help="Use somente valores positivos, ele será convertido automaticamente para negativo.")
+        
+        # Botão de submissão do formulário.
+        submit_button = st.form_submit_button(label="Enviar Registro")
     
 # ==============================================================================
 # 4. LÓGICA DE SUBMISSÃO DO FORMULÁRIO

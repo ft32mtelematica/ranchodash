@@ -26,3 +26,14 @@
     margin-top: 40px !important;    
 }
 
+/* Adicione este código ao seu arquivo .streamlit/style.css */
+
+/* Estiliza o container que tem o parâmetro border=True */
+[data-testid="stVerticalBlock"] > [data-testid="stVerticalBlockBorderWrapper"] {
+    background-color: #131314; /* Cor de fundo do card */
+    border: 5px solid #FFD700;   /* Borda amarela */
+    border-radius: 10px;         /* Cantos arredondados */
+    padding: 20px;               /* Espaçamento interno */
+    box-sizing: border-box;
+    height: 93%;                 /* Altura para alinhar com os outros cards */
+}

@@ -5,21 +5,21 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import gspread
-#from utils.styling import apply_global_styles
+from utils.styling import apply_global_styles
 from utils.g_sheets_connector import get_gspread_client
 
 # ==============================================================================
-# 2. CONFIGURAÇÃO DAS COLUNAS (sem alterações)
+# 2. CONFIGURAÇÃO DAS COLUNAS 
 # ==============================================================================
 COLUNA_DATA = "REGISTRO"
 COLUNA_VALOR = "LANÇAMENTOS"
 
 # ==============================================================================
-# 3. FUNÇÃO DE CARREGAMENTO DE DADOS (sem alterações)
+# 3. FUNÇÃO DE CARREGAMENTO DE DADOS 
 # ==============================================================================
-@st.cache_data(ttl=300)
+@st.cache_data(ttl=10)
 def load_fluxo_caixa_data(_client):
-    # ... (seu código de carregamento de dados continua o mesmo)
+    
     try:
         spreadsheet = _client.open("Previsao_de_Rancho")
         worksheet = spreadsheet.worksheet("FLUXO DE CAIXA")
@@ -52,6 +52,9 @@ def load_fluxo_caixa_data(_client):
 # ==============================================================================
 # 4. INÍCIO DA INTERFACE DO APLICATIVO
 # ==============================================================================
+# Aplica os estilos globais definidos no arquivo .streamlit/style.css
+apply_global_styles()
+
 client = get_gspread_client()
 if client:
     df_caixa = load_fluxo_caixa_data(client)
@@ -61,7 +64,7 @@ else:
 
 if not df_caixa.empty:
     # ==============================================================================
-    # NOVA SEÇÃO: CARD DINÂMICO PARA O SALDO ATUAL
+    # CARD DINÂMICO PARA O SALDO ATUAL
     # ==============================================================================
     
     # 1. Obter o saldo atual
@@ -98,11 +101,11 @@ if not df_caixa.empty:
     # st.metric(label="**Saldo Atual do Caixa**", value=f"R$ {saldo_atual:,.2f}")
 
     # ==============================================================================
-    # O restante do código continua exatamente o mesmo
+    # Gráfico de barras para variação do saldo
     # ==============================================================================
     
     if 'num_lancamentos_slider' not in st.session_state:
-        st.session_state.num_lancamentos_slider = min(30, len(df_caixa))
+        st.session_state.num_lancamentos_slider = min(80, len(df_caixa))
 
     #st.subheader(f"Variação do Saldo (Últimos {st.session_state.num_lancamentos_slider} Lançamentos)")
     

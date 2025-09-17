@@ -7,6 +7,10 @@ from utils.styling import apply_global_styles
 # ==============================================================================
 # 2. CONFIGURAÇÃO DA PÁGINA PRINCIPAL E NAVEGAÇÃO
 # ==============================================================================
+st.set_page_config(
+    layout="wide",
+)
+
 # Aplica os estilos globais definidos no arquivo .streamlit/style.css
 apply_global_styles()
 
@@ -32,4 +36,5 @@ st.sidebar.image(caminho_logo, width=200) # Aumente ou diminua este valor
 
 # Executa a navegação, fazendo com que o menu e as páginas funcionem.
 pg.run()
+
 

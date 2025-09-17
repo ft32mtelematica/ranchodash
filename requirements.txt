@@ -1,7 +1,6 @@
-streamlit
+gspread==6.2.1
 pandas
-gspread
-oauth2client
 plotly
-
-
+streamlit
+google-auth==2.40.3
+google-auth-oauthlib==1.2.2

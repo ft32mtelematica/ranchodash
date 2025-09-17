@@ -15,7 +15,7 @@ from utils.g_sheets_connector import get_gspread_client # Importa a função de 
 # 2. FUNÇÃO DE CARREGAMENTO DE DADOS
 # ==============================================================================
 # Esta função é responsável por buscar os dados da planilha e armazená-los em cache.
-@st.cache_data(ttl=300)
+@st.cache_data(ttl=10)
 def load_data(_client):
     """Carrega dados da aba 'Respostas_ao_formulario_1'."""
     try:
@@ -24,9 +24,6 @@ def load_data(_client):
         data_form = worksheet_form.get_all_records()
         df_form = pd.DataFrame(data_form) # Converte os dados recebidos em um DataFrame do Pandas.
 
-        # --- Limpeza e Conversão de Tipos ---
-        # Esta é a correção principal. Garantimos que as colunas tenham tipos
-        # consistentes para evitar os erros de serialização do Arrow.
 
         # Colunas que devem ser tratadas como texto (string).
         # Adicionado "IDENTIFICAÇÃO" como medida de segurança caso a coluna exista com esse nome.
@@ -113,8 +110,10 @@ if not df.empty:
     # 6.2. LÓGICA DE BUSCA
     # --------------------------------------------------------------------------
     # Cria a interface para o usuário digitar o RE e buscar.
-    st.subheader("Buscar por RE")
-    busca_re = st.text_input('Digite o RE (Sem dígito)', key='busca_re_input') # O `key` vincula este campo ao nosso session_state.
+    col1, col2, col3 = st.columns(3) 
+    with col1:
+        st.subheader("Buscar por RE")
+        busca_re = st.text_input('Digite o RE (Sem dígito)', key='busca_re_input') # O `key` vincula este campo ao nosso session_state.
     
     if st.button('Buscar', key='buscar_btn'): # Se o botão 'Buscar' for pressionado...
         if busca_re: # ...e se o campo de busca não estiver vazio...
@@ -150,20 +149,22 @@ if not df.empty:
         # ao modificar um DataFrame que é uma "fatia" de outro.
         resultado_salvo = st.session_state.resultado_busca.copy() 
         
-        # Modificação condicional: Se a coluna 'Quitado' for 'Sim', o valor em 'TOTAL' é zerado
-        # apenas para a exibição e cálculo da soma, sem alterar os dados originais.
+        # Filtra o resultado para exibir apenas as linhas com pagamento pendente.
         if "Quitado" in resultado_salvo.columns: # Verifica se a coluna 'Quitado' existe.
-            resultado_salvo.loc[resultado_salvo['Quitado'] == 'Sim', 'TOTAL'] = 0
+            resultado_pendente = resultado_salvo[resultado_salvo['Quitado'] != 'Sim']
+        else:
+            # Se a coluna 'Quitado' não existir, exibe tudo como pendente por segurança.
+            resultado_pendente = resultado_salvo
         
         # Exibe o DataFrame com o resultado, selecionando colunas específicas e aplicando formatação.
         st.dataframe(
-            resultado_salvo[["Graduação:", "Nome de Guerra:", "TOTAL", "Quitado"]] # Seleciona as colunas a serem exibidas.
+            resultado_pendente[["Graduação:", "Nome de Guerra:", "TOTAL", "Quitado"]] # Seleciona as colunas a serem exibidas.
             .style.format({"TOTAL": "R$ {:.2f}"}) # Formata a coluna 'TOTAL' como moeda.
             .set_properties(**{'background-color': "#3D3A3A", 'color': 'white'}) # Aplica estilo CSS na tabela.
         )
         
-        # Calcula a soma da coluna 'TOTAL' (que já foi zerada para os itens quitados).
-        soma_total = resultado_salvo["TOTAL"].sum() 
+        # Calcula a soma da coluna 'TOTAL' do DataFrame que contém apenas as pendências.
+        soma_total = resultado_pendente["TOTAL"].sum() 
         
         # Cria duas colunas para organizar o total e o botão de quitar.
         col1, col2 = st.columns([1, 4]) 
